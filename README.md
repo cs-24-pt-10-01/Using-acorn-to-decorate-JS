@@ -6,8 +6,8 @@ Missing features:
 - Handling return statements and throws
 
 ```mermaid
-graph LR
-    A[js code] -- acorn--> AST --Decorator(walkers)--> b[Decorated AST] --estree-util-to-js--> c[Decorated js code]
+graph LR;
+    A[js code] -- acorn--> AST --Decorator(walkers)--> b[Decorated AST] --estree-util-to-js--> c[Decorated js code];
 ```
 
 ## How to use main
