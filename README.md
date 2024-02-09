@@ -7,7 +7,9 @@ Missing features:
 
 ```mermaid
 graph LR;
-    a[js code] -- acorn--> AST --Decorator(walkers)--> b[Decorated AST] --estree-util-to-js--> c[Decorated js code]
+    a[js code] -- acorn--> AST 
+    AST --Decorator(walkers)--> b[Decorated AST] 
+    b --estree-util-to-js--> c[Decorated js code]
     end
 ```
 
