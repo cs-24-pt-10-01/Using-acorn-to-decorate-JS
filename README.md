@@ -6,11 +6,11 @@ Missing features:
 - Handling return statements and throws
 
 ```mermaid
-graph LR;
-    a[js code] -- acorn--> AST 
-    AST --Decorator(walkers)--> b[Decorated AST] 
-    b --estree-util-to-js--> c[Decorated js code]
-    end
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
 ```
 
 ## How to use main
