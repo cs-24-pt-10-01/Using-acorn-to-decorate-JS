@@ -1,5 +1,6 @@
 import * as acornWalk from 'acorn-walk'
 
+// wraps content of bracket with start and stop nodes
 function decorateBrackets(ast, startNode, stopNode) {
     // add start and stop nodes to the beginning and end of each bracket
     acornWalk.full(ast, node => {
