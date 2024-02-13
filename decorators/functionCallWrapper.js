@@ -54,7 +54,6 @@ function DecorateBlock(body, startNode, stopNode) {
             }
 
             // Return node for returning the result
-            //const returnNode = acorn.parse("return __result").body[0];
             const returnNode = {
                 type: "ReturnStatement",
                 argument: {
