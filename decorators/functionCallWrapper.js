@@ -9,37 +9,33 @@ function wrapFunctions(ast, startNode, stopNode) {
     });
 }
 
+
+function containsFunctionCall(node) {
+    let contains = false;
+    acornWalk.full(node, innerNode => {
+        if (innerNode.type == "CallExpression") {
+            contains = true;
+        }
+    });
+    return contains;
+}
+
 function DecorateBlock(body, startNode, stopNode) {
     const toChange = []; // list of nodes to wrap with start and stop nodes
+    // finding function calls
     body.forEach((innerNode, index) => {
-        // Function call
-        if (innerNode.type == "ExpressionStatement" && innerNode.expression.type == "CallExpression") {
+        if ((innerNode.type == "ExpressionStatement" || innerNode.type == "VariableDeclaration" || innerNode.type == "ReturnStatement") && containsFunctionCall(innerNode)) {
             toChange.push({ index, innerNode: innerNode });
         }
-        else if (innerNode.type == "ExpressionStatement" && innerNode.expression.type == "AssignmentExpression" && innerNode.expression.right.type == "CallExpression") {
-            toChange.push({ index, innerNode: innerNode });
-        }
-        // Variable declaration with function call
-        else if (innerNode.type == "VariableDeclaration") {
-            for (let i = 0; i < innerNode.declarations.length; i++) {
-                if (innerNode.declarations[i].init && innerNode.declarations[i].init.type == "CallExpression") {
-                    toChange.push({ index, innerNode: innerNode });
-                }
-            }
-        }
-        // return statement with function call
-        else if (innerNode.type == "ReturnStatement" && innerNode.argument.type == "CallExpression") {
-            toChange.push({ index, innerNode: innerNode });
-        }
-
     });
+
     let i = 0; // counter to keep added nodes into count
     toChange.forEach((change) => {
         // if the node is a return statement, the function call is moved to a variable and then returned
         if (change.innerNode.type == "ReturnStatement") {
             // variable with the function call
             const variableNode = {
-                type:"VariableDeclaration",
+                type: "VariableDeclaration",
                 declarations: [
                     {
                         type: "VariableDeclarator",
