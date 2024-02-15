@@ -1,4 +1,5 @@
 import * as acornWalk from 'acorn-walk'
+import { toJs } from 'estree-util-to-js'
 
 // wrap function calls in start and stop nodes
 function wrapFunctions(ast, startNode, stopNode) {
@@ -20,14 +21,36 @@ function containsFunctionCall(node) {
     return contains;
 }
 
-function DecorateBlock(body, startNode, stopNode) {
-    const toChange = []; // list of nodes to wrap with start and stop nodes
-    // finding function calls
+function findFunctionCallsInBody(body){
+    const calls = [];
     body.forEach((innerNode, index) => {
         if ((innerNode.type == "ExpressionStatement" || innerNode.type == "VariableDeclaration" || innerNode.type == "ReturnStatement") && containsFunctionCall(innerNode)) {
-            toChange.push({ index, innerNode: innerNode });
+            calls.push({ index, innerNode: innerNode });
         }
     });
+    return calls;
+}
+
+function findFunctionCallsInAST(ast){
+    const functionCalls = [];
+    acornWalk.full(ast, node => {
+        if (node.type == "BlockStatement" || node.type == "Program") {
+            functionCalls.push(...findFunctionCallsInBody(node.body));
+        }
+    });
+    // formatting the result
+    const result = functionCalls.map((call) => {
+        return {
+            position: call.innerNode.loc.start,
+            call: toJs(call.innerNode).value,
+            node: call.innerNode
+        }
+    });
+    return result;
+}
+
+function DecorateBlock(body, startNode, stopNode) {
+    const toChange = findFunctionCallsInBody(body);
 
     let i = 0; // counter to keep added nodes into count
     toChange.forEach((change) => {
@@ -71,4 +94,4 @@ function DecorateBlock(body, startNode, stopNode) {
     });
 }
 
-export { wrapFunctions };
+export { wrapFunctions, findFunctionCallsInAST};
