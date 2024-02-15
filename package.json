@@ -4,5 +4,15 @@
     "acorn": "^8.11.3",
     "acorn-walk": "^8.3.2",
     "estree-util-to-js": "^2.0.0"
-  }
+  },
+  "name": "@test/using-acorn-to-decorate-js",
+  "description": "This is an example of how to use acorn for adding start and stop nodes to JavaScript code, the start and stop nodes is intended to be calls for our RAPL library.",
+  "version": "1.0.0",
+  "main": "decorator.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
 }
