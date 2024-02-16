@@ -21,7 +21,7 @@ function decorateString(code){
 }
 
 function decorateSingleFile(path){
-    const code = readFileSync(path);
+    const code = fs.readFileSync(path);
     const decoratedCode = decorateString(code);
     fs.writeFile(path + "_decorated.js", decoratedCode, (err) => {
         if (err) throw err;
@@ -29,8 +29,12 @@ function decorateSingleFile(path){
 }
 
 function decorateFolder(path){
-    fs.readdirSync(path);
-    throw new error("Not implemented")
+    const files = fs.readdirSync(path);
+    files.forEach(file => {
+        if (file.endsWith(".js")){
+            decorateSingleFile(path + "/" + file);
+        }
+    })
 }
 
 function findFunctionCalls(path){
