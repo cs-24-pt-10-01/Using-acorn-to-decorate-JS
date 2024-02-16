@@ -6,11 +6,13 @@ import { findFunctionCallsInAST, wrapFunctions } from './decorators/functionCall
 
 // reads a single file and returns a decorated version as a string
 function decorateString(code){
-    const ast = acorn.parse(code, { ecmaVersion: 2022 });
+    const acornOptions = {ecmaVersion: "latest"};
+
+    const ast = acorn.parse(code, acornOptions);
 
     // rapl start and stop nodes
-    const startNode = acorn.parse("rapl.start()").body[0];
-    const stopNode = acorn.parse("rapl.stop()").body[0];
+    const startNode = acorn.parse("rapl.start()", acornOptions).body[0];
+    const stopNode = acorn.parse("rapl.stop()", acornOptions).body[0];
 
     // wrap function calls in start and stop nodes
     wrapFunctions(ast, startNode, stopNode);
