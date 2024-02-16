@@ -82,13 +82,13 @@ function DecorateBlock(body, startNode, stopNode) {
             }
 
             // replacing the return statement with new nodes
-            body.splice(change.index + i, 1, startNode, variableNode, stopNode, returnNode);
+            body.splice(change.index + i, 1, startNode(change.innerNode), variableNode, stopNode(change.innerNode), returnNode);
             i += 3;
         }
         else {
             // Adding nodes
-            body.splice(change.index + i, 0, startNode);
-            body.splice(change.index + 2 + i, 0, stopNode);
+            body.splice(change.index + i, 0, startNode(change.innerNode));
+            body.splice(change.index + 2 + i, 0, stopNode(change.innerNode));
             i += 2;
         }
     });
