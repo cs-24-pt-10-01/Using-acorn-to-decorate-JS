@@ -1,4 +1,4 @@
-function sigHejle() {
+function sigHej() {
     console.log('Hej');
 }
 
