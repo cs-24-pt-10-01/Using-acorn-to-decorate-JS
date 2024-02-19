@@ -2,14 +2,13 @@ import * as acornWalk from 'acorn-walk'
 import { toJs } from 'estree-util-to-js'
 
 // wrap function calls in start and stop nodes
-function wrapFunctions(ast, startNode, stopNode) {
+function wrapFunctions(ast, startNode, stopNode, importNode) {
     acornWalk.full(ast, node => {
         if (node.type == "BlockStatement" || node.type == "Program") {
-            DecorateBlock(node.body, startNode, stopNode);
+            DecorateBlock(node.body, startNode, stopNode, importNode);
         }
     });
 }
-
 
 function containsFunctionCall(node) {
     let contains = false;
@@ -49,7 +48,7 @@ function findFunctionCallsInAST(ast){
     return result;
 }
 
-function DecorateBlock(body, startNode, stopNode) {
+function DecorateBlock(body, startNode, stopNode, importNode) {
     const toChange = findFunctionCallsInBody(body);
 
     let i = 0; // counter to keep added nodes into count
@@ -92,6 +91,10 @@ function DecorateBlock(body, startNode, stopNode) {
             i += 2;
         }
     });
+    if (!toChange.empty) {
+        // insert rapl lib intro body
+        body.splice(0, 0, importNode);
+    }
 }
 
 export { wrapFunctions, findFunctionCallsInAST};

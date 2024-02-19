@@ -13,9 +13,10 @@ function decorateString(code){
     // rapl start and stop nodes
     const startNodeGenerator = (node) => acorn.parse("rapl.start(" + node.loc.start.line + ")", acornOptions).body[0]; 
     const stopNodeGenerator = (node) => acorn.parse("rapl.stop(" + node.loc.start.line + ")", acornOptions).body[0];
+    const importNode = acorn.parse("const rapl = require('./rapl.js')", acornOptions).body[0];
     
     // wrap function calls in start and stop nodes
-    wrapFunctions(ast, startNodeGenerator, stopNodeGenerator);
+    wrapFunctions(ast, startNodeGenerator, stopNodeGenerator, importNode);
     
     return toJs(ast).value;
 }
@@ -28,17 +29,31 @@ function decorateSingleFile(path, appendString = "_decorated.js"){
     });
 }
 
-function decorateFolder(path){
+function decorateFolder(path, jsLibPath, raplLibpath){
     const files = fs.readdirSync(path);
+    let jsFound = false;
     files.forEach(file => {
         if (file.endsWith(".js")){
-            decorateSingleFile(path + "/" + file, "");// overwrite file
+            try{
+                decorateSingleFile(path + "/" + file, "");// overwrite file
+                jsFound = true;
+            }
+            catch (err){
+                console.log("Error could not decorate file:" + file);
+                console.log(err);
+            }
         }
-        //recursive call for folders
+        // Recursive call for folders
         if (fs.statSync(path + "/" + file).isDirectory()){
             decorateFolder(path + "/" + file);
         }
     })
+
+    if (jsFound) {
+        // Copy rapl.js to the path, such that decorated files can use it.
+        fs.copyFileSync(jsLibPath, path + "/rapl.js",0, (err) => {throw err;}); // TODO write this directly into code
+        fs.copyFileSync(raplLibpath, path + "/rapl_lib.dll",0, (err) => {throw err;});
+    }
 }
 
 function findFunctionCalls(path){
