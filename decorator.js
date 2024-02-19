@@ -9,21 +9,21 @@ function decorateString(code){
     const acornOptions = {ecmaVersion: "latest", locations: true};
 
     const ast = acorn.parse(code, acornOptions);
-
+    
     // rapl start and stop nodes
     const startNodeGenerator = (node) => acorn.parse("rapl.start(" + node.loc.start.line + ")", acornOptions).body[0]; 
     const stopNodeGenerator = (node) => acorn.parse("rapl.stop(" + node.loc.start.line + ")", acornOptions).body[0];
-
+    
     // wrap function calls in start and stop nodes
     wrapFunctions(ast, startNodeGenerator, stopNodeGenerator);
-
+    
     return toJs(ast).value;
 }
 
-function decorateSingleFile(path){
+function decorateSingleFile(path, appendString = "_decorated.js"){
     const code = fs.readFileSync(path);
     const decoratedCode = decorateString(code);
-    fs.writeFile(path + "_decorated.js", decoratedCode, (err) => {
+    fs.writeFile(path + appendString, decoratedCode, (err) => {
         if (err) throw err;
     });
 }
@@ -32,7 +32,11 @@ function decorateFolder(path){
     const files = fs.readdirSync(path);
     files.forEach(file => {
         if (file.endsWith(".js")){
-            decorateSingleFile(path + "/" + file);
+            decorateSingleFile(path + "/" + file, "");// overwrite file
+        }
+        //recursive call for folders
+        if (fs.statSync(path + "/" + file).isDirectory()){
+            decorateFolder(path + "/" + file);
         }
     })
 }
