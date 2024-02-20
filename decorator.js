@@ -11,8 +11,8 @@ function decorateString(code){
     const ast = acorn.parse(code, acornOptions);
     
     // rapl start and stop nodes
-    const startNodeGenerator = (node) => acorn.parse("rapl.start(" + node.loc.start.line + ")", acornOptions).body[0]; 
-    const stopNodeGenerator = (node) => acorn.parse("rapl.stop(" + node.loc.start.line + ")", acornOptions).body[0];
+    const startNodeGenerator = (node) => acorn.parse("rapl.start(\"" + node.loc.start.line + "\")", acornOptions).body[0]; 
+    const stopNodeGenerator = (node) => acorn.parse("rapl.stop(\"" + node.loc.start.line + "\")", acornOptions).body[0];
     const importNode = acorn.parse("const rapl = require('./rapl.js')", acornOptions).body[0];
     
     // wrap function calls in start and stop nodes
