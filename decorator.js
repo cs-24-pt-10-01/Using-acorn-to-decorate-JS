@@ -4,7 +4,7 @@ import { toJs } from 'estree-util-to-js'
 import { decorateBrackets } from './decorators/brackets.js';
 import { findFunctionCallsInAST, wrapFunctions } from './decorators/functionCallWrapper.js';
 import os from 'os';
-
+import cp from 'child_process';
 // reads a single file and returns a decorated version as a string
 function decorateString(code, filename) {
     const acornOptions = { ecmaVersion: "latest", locations: true };
@@ -56,6 +56,9 @@ function decorateFolder(path, jsLibPath, raplLibpath) {
         fs.copyFileSync(jsLibPath, path + "/rapl.js", 0, (err) => { throw err; });
         const libEnd = os.platform() == "win32" ? "dll" : "so";
         fs.copyFileSync(raplLibpath, path + "/rapl_lib." + libEnd, 0, (err) => { throw err; });
+
+        // install koffi (used by rapl.js)
+        cp.execSync("npm install koffi");
     }
 }
 
