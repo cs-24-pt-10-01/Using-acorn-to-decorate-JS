@@ -8,6 +8,8 @@ function wrapFunctions(ast, startNode, stopNode, importNode) {
             DecorateBlock(node.body, startNode, stopNode, importNode);
         }
     });
+    // inserting import into program body
+    ast.body.splice(0, 0, importNode);
 }
 
 function containsFunctionCall(node) {
@@ -20,7 +22,7 @@ function containsFunctionCall(node) {
     return contains;
 }
 
-function findFunctionCallsInBody(body){
+function findFunctionCallsInBody(body) {
     const calls = [];
     body.forEach((innerNode, index) => {
         if ((innerNode.type == "ExpressionStatement" || innerNode.type == "VariableDeclaration" || innerNode.type == "ReturnStatement") && containsFunctionCall(innerNode)) {
@@ -30,7 +32,7 @@ function findFunctionCallsInBody(body){
     return calls;
 }
 
-function findFunctionCallsInAST(ast){
+function findFunctionCallsInAST(ast) {
     const functionCalls = [];
     acornWalk.full(ast, node => {
         if (node.type == "BlockStatement" || node.type == "Program") {
@@ -91,10 +93,6 @@ function DecorateBlock(body, startNode, stopNode, importNode) {
             i += 2;
         }
     });
-    if (!toChange.empty) {
-        // insert rapl lib intro body
-        body.splice(0, 0, importNode);
-    }
 }
 
-export { wrapFunctions, findFunctionCallsInAST};
+export { wrapFunctions, findFunctionCallsInAST };
