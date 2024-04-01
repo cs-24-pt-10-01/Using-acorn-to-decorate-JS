@@ -1,7 +1,7 @@
 const os = require("os");
 const koffi = require('koffi');
 
-const libPath = os.platform() == "win32" ? "rapl_lib.dll" : "rapl_lib.so";
+const libPath = os.platform() == "win32" ? "rapl_lib.dll" : "./rapl_lib.so";
 
 const lib = koffi.load(libPath);
 
