@@ -2,9 +2,10 @@ import * as fs from 'fs';
 import * as acorn from 'acorn'
 import { toJs } from 'estree-util-to-js'
 import { decorateBrackets } from './decorators/brackets.js';
-import { findFunctionCallsInAST, wrapFunctions } from './decorators/functionCallWrapper.js';
+import { findFunctionCallsInAST, wrapFunctions, getFunctionName } from './decorators/functionCallWrapper.js';
 import os from 'os';
 import cp from 'child_process';
+import { get } from 'http';
 // reads a single file and returns a decorated version as a string
 function decorateString(code, filename, onlyBody = false) {
     const acornOptions = { ecmaVersion: "latest", locations: true };
@@ -12,14 +13,22 @@ function decorateString(code, filename, onlyBody = false) {
     const ast = acorn.parse(code, acornOptions);
 
     // rapl start and stop nodes (start and stop are functions)
-    const startNodeGenerator = (node) => acorn.parse("rapl.start(\"" + node.loc.start.line + ":" + filename + "\")", acornOptions).body[0];
-    const stopNodeGenerator = (node) => acorn.parse("rapl.stop(\"" + node.loc.start.line + ":" + filename + "\")", acornOptions).body[0];
+    const startNodeGenerator = (node) => acorn.parse(nodeGenerator(true, node, filename), acornOptions).body[0];
+    const stopNodeGenerator = (node) => acorn.parse(nodeGenerator(false, node, filename), acornOptions).body[0];
     const importNode = acorn.parse("const rapl = require('./rapl.js')", acornOptions).body[0];
 
     // wrap function calls in start and stop nodes
     wrapFunctions(ast, startNodeGenerator, stopNodeGenerator, importNode, onlyBody);
 
     return toJs(ast).value;
+}
+
+function nodeGenerator(start, node, filename) {
+    const operation = start ? "start" : "stop";
+    const line = node.loc.start.line;
+    const functionName = getFunctionName(node);
+
+    return `rapl.${operation}("${line}:${filename}:${functionName}")`;
 }
 
 function decorateSingleFile(path, appendString = "_decorated.js", onlyBody = false) {

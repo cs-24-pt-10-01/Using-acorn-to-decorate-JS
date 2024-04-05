@@ -56,6 +56,27 @@ function findFunctionCallsInAST(ast) {
     return result;
 }
 
+function getFunctionName(node) {
+    let functionName = null;
+    if (node.type == "CallExpression") {
+        if (node.callee.type == "MemberExpression") {
+            return node.callee.property.name;
+        }
+        return node.callee.name;
+    }
+    acornWalk.full(node, innerNode => {
+        if (innerNode.type == "CallExpression") {
+            if (innerNode.callee.type == "MemberExpression") {
+                functionName = innerNode.callee.property.name;
+            }
+            else
+                functionName = innerNode.callee.name;
+        }
+    });
+
+    return functionName;
+}
+
 function DecorateBlock(body, startNode, stopNode, importNode) {
     const toChange = findFunctionCallsInBody(body);
 
@@ -101,4 +122,4 @@ function DecorateBlock(body, startNode, stopNode, importNode) {
     });
 }
 
-export { wrapFunctions, findFunctionCallsInAST };
+export { wrapFunctions, findFunctionCallsInAST, getFunctionName };
