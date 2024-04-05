@@ -6,7 +6,7 @@ import { findFunctionCallsInAST, wrapFunctions } from './decorators/functionCall
 import os from 'os';
 import cp from 'child_process';
 // reads a single file and returns a decorated version as a string
-function decorateString(code, filename) {
+function decorateString(code, filename, onlyBody = false) {
     const acornOptions = { ecmaVersion: "latest", locations: true };
 
     const ast = acorn.parse(code, acornOptions);
@@ -17,27 +17,27 @@ function decorateString(code, filename) {
     const importNode = acorn.parse("const rapl = require('./rapl.js')", acornOptions).body[0];
 
     // wrap function calls in start and stop nodes
-    wrapFunctions(ast, startNodeGenerator, stopNodeGenerator, importNode);
+    wrapFunctions(ast, startNodeGenerator, stopNodeGenerator, importNode, onlyBody);
 
     return toJs(ast).value;
 }
 
-function decorateSingleFile(path, appendString = "_decorated.js") {
+function decorateSingleFile(path, appendString = "_decorated.js", onlyBody = false) {
     const code = fs.readFileSync(path);
     const filename = path.split("/").slice(-1);
-    const decoratedCode = decorateString(code, filename);
+    const decoratedCode = decorateString(code, filename, onlyBody);
     fs.writeFile(path + appendString, decoratedCode, (err) => {
         if (err) throw err;
     });
 }
 
-function decorateFolder(path, jsLibPath, raplLibpath) {
+function decorateFolder(path, jsLibPath, raplLibpath, onlyBody = false) {
     const files = fs.readdirSync(path);
     let jsFound = false;
     files.forEach(file => {
         if (file.endsWith(".js")) {
             try {
-                decorateSingleFile(path + "/" + file, "");// overwrite file
+                decorateSingleFile(path + "/" + file, "", onlyBody);// overwrite file
                 jsFound = true;
             }
             catch (err) {

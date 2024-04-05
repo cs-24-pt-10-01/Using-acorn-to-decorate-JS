@@ -19,3 +19,6 @@ graph LR;
 - ```npm install package.json```
 - ```node decorateFile.js <your js file here>``` or ```node decorateFolder.js <your folder here> ```
 
+## ignoring funcion calls within functions
+The program can ignore function calls within functions as such:
+- ``` node decorateFile.js <your js file here> true ```

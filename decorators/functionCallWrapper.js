@@ -2,12 +2,18 @@ import * as acornWalk from 'acorn-walk'
 import { toJs } from 'estree-util-to-js'
 
 // wrap function calls in start and stop nodes
-function wrapFunctions(ast, startNode, stopNode, importNode) {
-    acornWalk.full(ast, node => {
-        if (node.type == "BlockStatement" || node.type == "Program") {
-            DecorateBlock(node.body, startNode, stopNode, importNode);
-        }
-    });
+function wrapFunctions(ast, startNode, stopNode, importNode, onlyBody = false) {
+    // decorate main body
+    DecorateBlock(ast.body, startNode, stopNode, importNode);
+
+    // decorating other blocks in the program
+    if (!onlyBody) {
+        acornWalk.full(ast, node => {
+            if (node.type == "BlockStatement") {
+                DecorateBlock(node.body, startNode, stopNode, importNode);
+            }
+        });
+    }
     // inserting import into program body
     ast.body.splice(0, 0, importNode);
 }
