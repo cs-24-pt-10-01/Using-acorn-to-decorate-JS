@@ -56,7 +56,7 @@ function decorateFolder(path, jsLibPath, raplLibpath, onlyBody = false) {
         }
         // Recursive call for folders
         if (fs.statSync(path + "/" + file).isDirectory()) {
-            decorateFolder(path + "/" + file);
+            decorateFolder(path + "/" + file, jsLibPath, raplLibpath, onlyBody);
         }
     })
 
