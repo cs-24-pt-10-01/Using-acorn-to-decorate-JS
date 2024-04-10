@@ -65,9 +65,6 @@ function decorateFolder(path, jsLibPath, raplLibpath, onlyBody = false) {
         fs.copyFileSync(jsLibPath, path + "/rapl.js", 0, (err) => { throw err; });
         const libEnd = os.platform() == "win32" ? "dll" : "so";
         fs.copyFileSync(raplLibpath, path + "/rapl_lib." + libEnd, 0, (err) => { throw err; });
-
-        // install koffi (used by rapl.js)
-        cp.execSync("npm install koffi");
     }
 }
 

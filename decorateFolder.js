@@ -1,5 +1,7 @@
 import * as decorator from "./decorator.js"
 import os from 'os';
+import cp from 'child_process';
+
 
 const path = process.argv[2];
 const seperator = os.platform() == "win32" ? "\\" : "/";
@@ -12,5 +14,8 @@ decorator.decorateFolder(path
     , projektPath + "/libs/rapl.js"
     , projektPath + "/libs/" + "thor_local_client." + libEnd
     , body);
+
+// install koffi (used by rapl.js)
+cp.execSync("npm install --prefix " + path + " koffi");
 
 console.log("folder decorated");
