@@ -1,11 +1,9 @@
 import * as fs from 'fs';
 import * as acorn from 'acorn'
 import { toJs } from 'estree-util-to-js'
-import { decorateBrackets } from './decorators/brackets.js';
 import { findFunctionCallsInAST, wrapFunctions, getFunctionName } from './decorators/functionCallWrapper.js';
 import os from 'os';
-import cp from 'child_process';
-import { get } from 'http';
+
 // reads a single file and returns a decorated version as a string
 function decorateString(code, filename, onlyBody = false) {
     const acornOptions = { ecmaVersion: "latest", locations: true };
@@ -33,8 +31,7 @@ function nodeGenerator(start, node, filename) {
 
 function decorateSingleFile(path, appendString = "_decorated.js", onlyBody = false) {
     const code = fs.readFileSync(path);
-    const filename = path.split("/").slice(-1);
-    const decoratedCode = decorateString(code, filename, onlyBody);
+    const decoratedCode = decorateString(code, path, onlyBody);
     fs.writeFile(path + appendString, decoratedCode, (err) => {
         if (err) throw err;
     });
