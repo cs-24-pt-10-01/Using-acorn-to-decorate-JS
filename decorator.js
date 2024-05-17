@@ -61,7 +61,7 @@ function decorateFolder(path, jsLibPath, raplLibpath, onlyBody = false) {
         // Copy rapl.js to the path, such that decorated files can use it.
         fs.copyFileSync(jsLibPath, path + "/rapl.js", 0, (err) => { throw err; });
         const libEnd = os.platform() == "win32" ? "dll" : "so";
-        fs.copyFileSync(raplLibpath, path + "/rapl_lib." + libEnd, 0, (err) => { throw err; });
+        fs.copyFileSync(raplLibpath, path + "/thor_lib." + libEnd, 0, (err) => { throw err; });
     }
 }
 

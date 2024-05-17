@@ -12,7 +12,7 @@ const body = process.argv[3] == "true";
 
 decorator.decorateFolder(path
     , projektPath + "/libs/rapl.js"
-    , projektPath + "/libs/" + "thor_local_client." + libEnd
+    , projektPath + "/libs/" + "thor_lib." + libEnd
     , body);
 
 // install koffi (used by rapl.js)
